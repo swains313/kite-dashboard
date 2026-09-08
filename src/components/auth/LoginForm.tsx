@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -14,12 +16,29 @@ export const LoginForm: React.FC = () => {
   const coreApiUrl =
     process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('kite_remember_email');
+    const savedRemember = localStorage.getItem('kite_remember_me');
+    if (savedEmail && savedRemember === 'true') {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
 
     try {
+      if (rememberMe) {
+        localStorage.setItem('kite_remember_email', email);
+        localStorage.setItem('kite_remember_me', 'true');
+      } else {
+        localStorage.removeItem('kite_remember_email');
+        localStorage.removeItem('kite_remember_me');
+      }
+
       const res = await fetch(`${coreApiUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -74,7 +93,7 @@ export const LoginForm: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@kite.local"
+                placeholder="operator@kite.local"
                 className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
               />
             </div>
@@ -85,14 +104,38 @@ export const LoginForm: React.FC = () => {
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+                className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-11 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-200 transition-colors focus:outline-none"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1 pb-1">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded bg-[#0b0e14] border-[#232936] text-blue-600 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+              />
+              <span className="text-xs text-slate-300">Remember me</span>
+            </label>
           </div>
 
           <button
@@ -111,14 +154,6 @@ export const LoginForm: React.FC = () => {
             )}
           </button>
         </form>
-
-        <div className="pt-4 border-t border-[#232936] text-[11px] text-slate-400 space-y-1">
-          <div className="font-semibold text-slate-300">Default Credentials:</div>
-          <div className="flex justify-between font-mono bg-[#0b0e14] px-2.5 py-1 rounded border border-[#232936]">
-            <span>Email: admin@kite.local</span>
-            <span>Pass: Admin@Trading2026!</span>
-          </div>
-        </div>
       </div>
     </div>
   );
