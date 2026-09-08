@@ -36,19 +36,19 @@ export default function Home() {
       <header className="border-b border-[#232936] bg-[#151922]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-sm text-white shadow-lg shadow-blue-600/30">
-              K
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/30">
+              <Activity className="w-4 h-4 text-white" />
             </div>
             <div>
               <h1 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
-                Zerodha Kite Autonomous Terminal
+                Vertex Intelligence Console
               </h1>
               <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
                 <span className="flex items-center gap-1 text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> LIVE STREAM
                 </span>
                 <span>•</span>
-                <span>NSE EQUITIES & DERIVATIVES</span>
+                <span>HIGH-THROUGHPUT METRIC PROCESSING</span>
               </div>
             </div>
           </div>

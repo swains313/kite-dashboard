@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, Eye, EyeOff, Activity } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -61,11 +61,11 @@ export const LoginForm: React.FC = () => {
   return (
     <div className="w-full max-w-md space-y-8 mx-auto">
       <div className="text-center space-y-2">
-        <div className="inline-flex w-12 h-12 rounded-xl bg-blue-600 items-center justify-center font-bold text-xl text-white shadow-xl shadow-blue-600/30">
-          K
+        <div className="inline-flex w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center shadow-xl shadow-blue-600/30">
+          <Activity className="w-6 h-6 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Zerodha Kite Terminal</h1>
-        <p className="text-xs text-slate-400">Institutional Algorithmic Trading & Risk Gateway</p>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Vertex Intelligence Console</h1>
+        <p className="text-xs text-slate-400">High-Performance Real-Time Computational Gateway</p>
       </div>
 
       <div className="bg-[#151922] border border-[#232936] rounded-2xl p-8 shadow-2xl space-y-6">
@@ -93,7 +93,7 @@ export const LoginForm: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="operator@kite.local"
+                placeholder="operator@vertex.internal"
                 className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
               />
             </div>

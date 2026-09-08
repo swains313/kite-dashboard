@@ -3,8 +3,8 @@ import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Kite Algorithmic Trading Suite | Dashboard',
-  description: 'Real-time trading execution monitor, ML inferences, and AI thesis review',
+  title: 'Vertex Intelligence Console',
+  description: 'Real-time telemetry, quantitative analytics, and metrics engine',
 };
 
 export default function RootLayout({
