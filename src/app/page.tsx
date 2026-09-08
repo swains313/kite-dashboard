@@ -1,17 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { TradingChart } from '@/components/trading/TradingChart';
+import { IntradayPickCard } from '@/components/trading/IntradayPickCard';
 import { PositionsPanel } from '@/components/trading/PositionsPanel';
 import { OrderEntryPanel } from '@/components/trading/OrderEntryPanel';
-import { AIThesisPanel } from '@/components/trading/AIThesisPanel';
-import { Users, LogOut, User as UserIcon, Shield, Activity } from 'lucide-react';
+import { TradeSetup } from '@/types/trading.types';
+import { Users, LogOut, User as UserIcon, Activity } from 'lucide-react';
 
 export default function Home() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const [selectedSymbol, setSelectedSymbol] = useState<string>('TATAMOTORS');
+  const [activeSetup, setActiveSetup] = useState<TradeSetup | null>(null);
 
   if (isLoading) {
     return (
@@ -29,6 +32,16 @@ export default function Home() {
       </div>
     );
   }
+
+  const handleSelectSetup = (setup: TradeSetup) => {
+    setSelectedSymbol(setup.symbol);
+    setActiveSetup(setup);
+  };
+
+  const handlePrefillOrder = (setup: TradeSetup) => {
+    setSelectedSymbol(setup.symbol);
+    setActiveSetup(setup);
+  };
 
   return (
     <main className="min-h-screen bg-[#0b0e14] text-slate-200">
@@ -89,20 +102,38 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Trading Cockpit View */}
+      {/* Multi-Card Trading Cockpit View */}
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Main Trading Grid */}
+        {/* Row 1: Interactive Chart + Today's Best Stock Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left 2 Cols: Financial Candlestick Chart & Positions */}
-          <div className="lg:col-span-2 space-y-6">
-            <TradingChart />
+          <div className="lg:col-span-2">
+            <TradingChart
+              symbol={selectedSymbol}
+              onSymbolChange={setSelectedSymbol}
+              activeSetup={activeSetup}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <IntradayPickCard
+              onSelectSetup={handleSelectSetup}
+              onPrefillOrder={handlePrefillOrder}
+              activeSetupId={activeSetup?.id}
+            />
+          </div>
+        </div>
+
+        {/* Row 2: Live Positions + Fast Order Execution */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
             <PositionsPanel />
           </div>
 
-          {/* Right Col: Fast Order Entry & Multi-AI Thesis */}
-          <div className="space-y-6">
-            <OrderEntryPanel />
-            <AIThesisPanel />
+          <div className="lg:col-span-1">
+            <OrderEntryPanel
+              symbol={selectedSymbol}
+              activeSetup={activeSetup}
+            />
           </div>
         </div>
       </div>
