@@ -9,6 +9,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Ensure public folder exists for Next.js static asset copy
+RUN mkdir -p public
+
 # Pass build-time environment arguments if needed
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
