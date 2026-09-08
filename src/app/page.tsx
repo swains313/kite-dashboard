@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Activity, RefreshCw, Cpu, ShieldCheck, Database, Layers } from 'lucide-react';
+import Link from 'next/link';
+import { Activity, RefreshCw, Cpu, ShieldCheck, Database, Layers, Users, LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { ServiceCard } from '@/components/ServiceCard';
 import { SystemOverviewHealth } from '@/modules/health/health.model';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const [data, setData] = useState<SystemOverviewHealth | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [lastRefreshed, setLastRefreshed] = useState<string>('');
+
+  const { user, isAuthenticated, logout } = useAuth();
 
   const fetchHealthOverview = async () => {
     setLoading(true);
@@ -49,17 +53,51 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-slate-400">
-              Updated: <span className="text-slate-200 font-mono">{lastRefreshed || '...'}</span>
-            </span>
+          <div className="flex items-center gap-3">
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 bg-[#0b0e14] border border-[#232936] px-3 py-1.5 rounded-lg text-xs">
+                  <UserIcon className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="font-medium text-white">{user.username}</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[10px] font-semibold uppercase ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                    {user.role}
+                  </span>
+                </div>
+
+                {user.role === 'admin' && (
+                  <Link
+                    href="/users"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#232936] hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors"
+                  >
+                    <Users className="w-3.5 h-3.5 text-blue-400" />
+                    Operators
+                  </Link>
+                )}
+
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#232936] hover:bg-rose-900/40 text-xs font-medium text-slate-300 hover:text-rose-300 transition-colors"
+                  title="Sign out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/20 transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                Operator Login
+              </Link>
+            )}
+
             <button
               onClick={fetchHealthOverview}
               disabled={loading}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#232936] hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-blue-400' : ''}`} />
-              Refresh
             </button>
           </div>
         </div>

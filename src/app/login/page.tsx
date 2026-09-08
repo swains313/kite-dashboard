@@ -1,0 +1,146 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const coreApiUrl =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`${coreApiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Invalid credentials');
+      }
+
+      login(data.token, data.user);
+      router.push('/');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0b0e14] flex flex-col items-center justify-center p-6 selection:bg-blue-600 selection:text-white">
+      <div className="w-full max-w-md space-y-8">
+        {/* Brand Header */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex w-12 h-12 rounded-xl bg-blue-600 items-center justify-center font-bold text-xl text-white shadow-xl shadow-blue-600/30">
+            K
+          </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Zerodha Kite Terminal
+          </h1>
+          <p className="text-xs text-slate-400">
+            Institutional Algorithmic Trading & Risk Gateway
+          </p>
+        </div>
+
+        {/* Login Box */}
+        <div className="bg-[#151922] border border-[#232936] rounded-2xl p-8 shadow-2xl space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-[#232936]">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              Cryptographic Login
+            </span>
+            <span className="text-[11px] font-mono text-slate-400">RBAC Enabled</span>
+          </div>
+
+          {error && (
+            <div className="p-3.5 bg-rose-950/40 border border-rose-800/40 rounded-xl flex items-start gap-2.5 text-rose-300 text-xs">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Operator Email
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@kite.local"
+                  className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors font-mono"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                Master Password
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full bg-[#0b0e14] border border-[#232936] rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors font-mono"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-sm font-semibold text-white transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Authenticating...
+                </>
+              ) : (
+                <>
+                  Enter Trading Cockpit
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Seed Credentials Hint */}
+          <div className="pt-4 border-t border-[#232936] text-[11px] text-slate-400 space-y-1">
+            <div className="font-semibold text-slate-300">Default Credentials:</div>
+            <div className="flex justify-between font-mono bg-[#0b0e14] px-2.5 py-1 rounded border border-[#232936]">
+              <span>Email: admin@kite.local</span>
+              <span>Pass: Admin@Trading2026!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
