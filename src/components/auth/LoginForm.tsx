@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, Eye, EyeOff, Activity } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +53,10 @@ export const LoginForm: React.FC = () => {
       }
 
       login(data.token, data.user);
+      router.push('/');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+        window.location.href = '/';
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
@@ -149,7 +155,7 @@ export const LoginForm: React.FC = () => {
               </>
             ) : (
               <>
-                Enter Trading Cockpit <ArrowRight className="w-4 h-4" />
+                Access Console <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
