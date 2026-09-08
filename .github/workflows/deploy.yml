@@ -64,15 +64,17 @@ jobs:
           script: |
             echo "Pulling latest kite-dashboard image..."
             docker pull ${{ secrets.DOCKER_USERNAME }}/kite-dashboard:latest
-            docker stop kite-dashboard || true
-            docker rm kite-dashboard || true
+            docker stop kite-dashboard 2>/dev/null || true
+            docker rm kite-dashboard 2>/dev/null || true
+            DASHBOARD_PORT="${{ secrets.CLIENT_PORT || '3005' }}"
             docker run -d \
               --name kite-dashboard \
               --restart unless-stopped \
-              -p ${{ secrets.CLIENT_PORT || '3000' }}:3000 \
+              -p ${DASHBOARD_PORT}:3000 \
               -e NODE_ENV=production \
               -e PORT=3000 \
               ${{ secrets.DOCKER_USERNAME }}/kite-dashboard:latest
-            echo "Deployment finished. Checking health..."
-            sleep 3
-            curl -f http://localhost:${{ secrets.CLIENT_PORT || '3000' }}/api/health || exit 1
+            echo "Deployment finished. Checking health on port ${DASHBOARD_PORT}..."
+            sleep 5
+            curl -f http://localhost:${DASHBOARD_PORT}/api/health || exit 1
+
