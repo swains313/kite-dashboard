@@ -131,98 +131,143 @@ export const AIModelCards: React.FC<AIModelCardsProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-[#232936]">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-emerald-400" />
-            <h4 className="text-sm font-bold text-white tracking-wide">{quantitative.modelName}</h4>
+            <h4 className="text-sm font-bold text-white tracking-wide">
+              {quantitative.minervini ? 'Minervini SEPA Engine' : quantitative.modelName}
+            </h4>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-            Rule Engine
+            {quantitative.minervini ? `${quantitative.minervini.stage} // RS ${quantitative.minervini.rsRanking}` : 'Rule Engine'}
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
-            <span className="text-[10px] text-slate-400 block">VWAP Alignment</span>
-            <span
-              className={`font-mono font-bold text-sm mt-0.5 flex items-center gap-1 ${
-                quantitative.vwapStatus === 'ABOVE' ? 'text-emerald-400' : 'text-rose-400'
-              }`}
-            >
-              {quantitative.vwapStatus === 'ABOVE' ? (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              ) : (
-                <XCircle className="w-3.5 h-3.5" />
-              )}
-              {quantitative.vwapStatus} VWAP
-            </span>
-          </div>
+        {quantitative.minervini ? (
+          <div className="space-y-2 text-xs">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-[#0b0e14] border border-[#232936] p-2.5 rounded-xl">
+                <span className="text-[10px] text-slate-400 block font-mono">SEPA VERDICT</span>
+                <span
+                  className={`font-mono font-black text-base mt-0.5 block ${
+                    quantitative.minervini.minerviniVerdict === 'BUY'
+                      ? 'text-emerald-400'
+                      : quantitative.minervini.minerviniVerdict === 'HOLD'
+                      ? 'text-cyan-300'
+                      : 'text-rose-400'
+                  }`}
+                >
+                  {quantitative.minervini.minerviniVerdict}
+                </span>
+              </div>
 
-          <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
-            <span className="text-[10px] text-slate-400 block">9/20 EMA Cross</span>
-            <span
-              className={`font-mono font-bold text-sm mt-0.5 flex items-center gap-1 ${
-                quantitative.emaAlignment === 'BULLISH' ? 'text-emerald-400' : 'text-rose-400'
-              }`}
-            >
-              {quantitative.emaAlignment === 'BULLISH' ? (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              ) : (
-                <XCircle className="w-3.5 h-3.5" />
-              )}
-              {quantitative.emaAlignment}
-            </span>
-          </div>
+              <div className="bg-[#0b0e14] border border-[#232936] p-2.5 rounded-xl">
+                <span className="text-[10px] text-slate-400 block font-mono">TREND TEMPLATE</span>
+                <span
+                  className={`font-mono font-bold text-base mt-0.5 block ${
+                    quantitative.minervini.trendTemplate.allPassed
+                      ? 'text-emerald-400'
+                      : quantitative.minervini.trendTemplate.passCount >= 6
+                      ? 'text-teal-300'
+                      : 'text-amber-400'
+                  }`}
+                >
+                  {quantitative.minervini.trendTemplate.passCount} / 8 Passed
+                </span>
+              </div>
 
-          <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
-            <span className="text-[10px] text-slate-400 block">RSI Momentum (14)</span>
-            <div className="flex items-center gap-1.5 mt-0.5">
+              <div className="bg-[#0b0e14] border border-[#232936] p-2.5 rounded-xl">
+                <span className="text-[10px] text-slate-400 block font-mono">MARKET STAGE</span>
+                <span className="font-mono font-bold text-xs text-slate-200 mt-0.5 block truncate">
+                  {quantitative.minervini.stageLabel}
+                </span>
+              </div>
+
+              <div className="bg-[#0b0e14] border border-[#232936] p-2.5 rounded-xl">
+                <span className="text-[10px] text-slate-400 block font-mono">RS RANKING (vs NIFTY)</span>
+                <span
+                  className={`font-mono font-bold text-base mt-0.5 block ${
+                    quantitative.minervini.rsRanking >= 70
+                      ? 'text-emerald-400'
+                      : quantitative.minervini.rsRanking >= 50
+                      ? 'text-amber-300'
+                      : 'text-rose-400'
+                  }`}
+                >
+                  {quantitative.minervini.rsRanking} / 99
+                </span>
+              </div>
+            </div>
+
+            <div className="p-2.5 bg-[#0b0e14] border border-[#232936] rounded-xl text-[11px] font-mono text-slate-300 leading-relaxed">
+              <span className="text-amber-400 font-bold block mb-0.5">Minervini Thesis:</span>
+              {quantitative.minervini.verdictReason}
+            </div>
+
+            <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 px-1">
+              <span>SMA50: ₹{quantitative.minervini.sma50.toFixed(1)}</span>
+              <span>SMA150: ₹{quantitative.minervini.sma150.toFixed(1)}</span>
+              <span>SMA200: ₹{quantitative.minervini.sma200.toFixed(1)}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">VWAP Alignment</span>
               <span
-                className={`font-mono font-bold text-sm ${
-                  quantitative.rsiValue > 70
-                    ? 'text-amber-400'
-                    : quantitative.rsiValue >= 50
-                    ? 'text-emerald-400'
-                    : quantitative.rsiValue >= 40
-                    ? 'text-blue-400'
-                    : 'text-rose-400'
+                className={`font-mono font-bold text-sm mt-0.5 flex items-center gap-1 ${
+                  quantitative.vwapStatus === 'ABOVE' ? 'text-emerald-400' : 'text-rose-400'
                 }`}
               >
-                {quantitative.rsiValue.toFixed(1)}
+                {quantitative.vwapStatus === 'ABOVE' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <XCircle className="w-3.5 h-3.5" />
+                )}
+                {quantitative.vwapStatus} VWAP
               </span>
+            </div>
+
+            <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">9/20 EMA Cross</span>
               <span
-                className={`text-[9px] font-mono px-1 rounded ${
-                  quantitative.rsiValue > 70
-                    ? 'bg-amber-500/20 text-amber-300'
-                    : quantitative.rsiValue >= 50
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : quantitative.rsiValue >= 40
-                    ? 'bg-blue-500/20 text-blue-300'
-                    : 'bg-rose-500/20 text-rose-300'
+                className={`font-mono font-bold text-sm mt-0.5 flex items-center gap-1 ${
+                  quantitative.emaAlignment === 'BULLISH' ? 'text-emerald-400' : 'text-rose-400'
                 }`}
               >
-                {quantitative.rsiValue > 70
-                  ? 'Overbought'
-                  : quantitative.rsiValue >= 50
-                  ? 'Bullish'
-                  : quantitative.rsiValue >= 40
-                  ? 'Neutral'
-                  : 'Bearish'}
+                {quantitative.emaAlignment === 'BULLISH' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <XCircle className="w-3.5 h-3.5" />
+                )}
+                {quantitative.emaAlignment}
+              </span>
+            </div>
+
+            <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">RSI Momentum (14)</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span
+                  className={`font-mono font-bold text-sm ${
+                    quantitative.rsiValue > 70
+                      ? 'text-amber-400'
+                      : quantitative.rsiValue >= 50
+                      ? 'text-emerald-400'
+                      : quantitative.rsiValue >= 40
+                      ? 'text-blue-400'
+                      : 'text-rose-400'
+                  }`}
+                >
+                  {quantitative.rsiValue.toFixed(1)}
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
+              <span className="text-[10px] text-slate-400 block">ATR Volatility (₹)</span>
+              <span className="font-mono font-bold text-amber-400 text-sm mt-0.5">
+                ₹{quantitative.atrValue.toFixed(2)}
               </span>
             </div>
           </div>
-
-          <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
-            <span className="text-[10px] text-slate-400 block">ATR Volatility (₹)</span>
-            <span className="font-mono font-bold text-amber-400 text-sm mt-0.5">
-              ₹{quantitative.atrValue.toFixed(2)}
-            </span>
-          </div>
-        </div>
-
-        <div className="p-3 bg-[#0b0e14] border border-[#232936] rounded-xl flex items-center justify-between text-xs font-mono">
-          <span className="text-slate-400 flex items-center gap-1">
-            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" /> Key Support (SL):
-          </span>
-          <span className="font-bold text-rose-400">₹{quantitative.supportLevel.toFixed(1)}</span>
-        </div>
+        )}
       </div>
     </div>
   );

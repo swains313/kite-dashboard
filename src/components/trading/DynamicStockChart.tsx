@@ -9,7 +9,7 @@ interface DynamicStockChartProps {
   symbol: string;
   companyName: string;
   currentPrice: number;
-  direction: 'BUY' | 'SELL' | 'NEUTRAL';
+  direction: 'BUY' | 'HOLD' | 'SELL' | 'NEUTRAL';
   buyTime: string;
   entryPrice: number;
   stopLoss: number;
@@ -209,6 +209,8 @@ export const DynamicStockChart: React.FC<DynamicStockChartProps> = ({
         className={`px-3.5 py-2 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs font-mono ${
           direction === 'BUY'
             ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
+            : direction === 'HOLD'
+            ? 'bg-cyan-950/20 border-cyan-500/30 text-cyan-300'
             : direction === 'SELL'
             ? 'bg-rose-950/20 border-rose-500/30 text-rose-300'
             : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
@@ -217,17 +219,21 @@ export const DynamicStockChart: React.FC<DynamicStockChartProps> = ({
         <div className="flex items-center gap-2">
           <span className="font-bold uppercase px-2 py-0.5 rounded bg-black/40 border border-current text-[10px]">
             {direction === 'BUY'
-              ? 'DECISION: HOLD / ACCUMULATE'
+              ? 'DECISION: BUY / ACCUMULATE (Stage 2 Breakout)'
+              : direction === 'HOLD'
+              ? 'DECISION: HOLD (Trend In Progress)'
               : direction === 'SELL'
-              ? 'DECISION: SELL / EXIT'
+              ? 'DECISION: SELL / EXIT (Minervini Rule Violation)'
               : 'DECISION: WAIT FOR TRIGGER'}
           </span>
           <span className="text-[11px] text-slate-300">
             {direction === 'BUY'
-              ? `Holding above VWAP. Stop loss at ₹${stopLoss.toFixed(1)} (-${stopLossPercent}%) is safe. Target ₹${target1.toFixed(1)} pending.`
+              ? `Confirmed Stage 2 setup. Stop loss at ₹${stopLoss.toFixed(1)} (-${stopLossPercent}%) is safe. Target ₹${target1.toFixed(1)} pending.`
+              : direction === 'HOLD'
+              ? `Holding trend structure above key moving averages. Trail stop loss at ₹${stopLoss.toFixed(1)} (-${stopLossPercent}%). Protect capital.`
               : direction === 'SELL'
-              ? `Trading below VWAP. Trailing stop/risk triggered. Exit recommended to protect capital.`
-              : `Consolidation zone. Wait for breakout confirmation above Day High.`}
+              ? `Breakdown detected or below 50-day SMA. Minervini rule: Cut losses quickly to protect capital.`
+              : `Consolidation zone. Wait for breakout confirmation above pivot.`}
           </span>
         </div>
       </div>

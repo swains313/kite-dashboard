@@ -168,11 +168,16 @@ export default function ScannerPage() {
                   {/* Card Header */}
                   <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-2xl font-black tracking-tight text-white">{setup.symbol}</span>
                         <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold text-[10px] font-mono tracking-wider">
                           {setup.signal}
                         </span>
+                        {setup.minervini && (
+                          <span className="px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-bold text-[10px] font-mono tracking-wider">
+                            {setup.minervini.stage} • RS {setup.minervini.rsRanking}
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-slate-400 mt-0.5">{setup.companyName}</p>
                     </div>

@@ -6,7 +6,7 @@ import { Clock, ShieldAlert, Target, TrendingUp, TrendingDown, MinusCircle, Scal
 interface TradeLevelsBannerProps {
   symbol: string;
   companyName: string;
-  direction: 'BUY' | 'SELL' | 'NEUTRAL';
+  direction: 'BUY' | 'HOLD' | 'SELL' | 'NEUTRAL';
   tradeType: 'INTRADAY' | 'SWING';
   holdingPeriod: string;
   buyTime: string;
@@ -62,6 +62,8 @@ export const TradeLevelsBanner: React.FC<TradeLevelsBannerProps> = ({
             className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border flex items-center gap-1 ${
               direction === 'BUY'
                 ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                : direction === 'HOLD'
+                ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
                 : direction === 'SELL'
                 ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
                 : 'bg-amber-500/15 border-amber-500/30 text-amber-300'
@@ -69,6 +71,8 @@ export const TradeLevelsBanner: React.FC<TradeLevelsBannerProps> = ({
           >
             {direction === 'BUY' ? (
               <TrendingUp className="w-3 h-3" />
+            ) : direction === 'HOLD' ? (
+              <MinusCircle className="w-3 h-3 text-cyan-300" />
             ) : direction === 'SELL' ? (
               <TrendingDown className="w-3 h-3" />
             ) : (
@@ -76,6 +80,8 @@ export const TradeLevelsBanner: React.FC<TradeLevelsBannerProps> = ({
             )}
             {direction === 'BUY'
               ? 'BUY SETUP'
+              : direction === 'HOLD'
+              ? 'HOLD ACTIVE'
               : direction === 'SELL'
               ? 'SELL / AVOID'
               : 'WAIT FOR TRIGGER'}

@@ -33,6 +33,46 @@ export interface GeminiPrediction {
   executionAdvice: string;
 }
 
+export interface TrendTemplateCriteria {
+  priceAbove150MA: boolean;
+  priceAbove200MA: boolean;
+  ma150AboveMA200: boolean;
+  ma200TrendingUp: boolean;
+  ma50Above150Above200: boolean;
+  priceAbove50MA: boolean;
+  above30PctFrom52wLow: boolean;
+  within25PctOf52wHigh: boolean;
+  allPassed: boolean;
+  passCount: number;
+}
+
+export interface VCPResult {
+  detected: boolean;
+  contractionCount: number;
+  pullbackPercentages: number[];
+  volumeDryUp: boolean;
+  pivotPrice: number;
+  breakoutProximityPercent: number;
+  quality: 'HIGH' | 'MEDIUM' | 'LOW' | 'NONE';
+}
+
+export interface MinerviniAnalysis {
+  trendTemplate: TrendTemplateCriteria;
+  stage: 'STAGE_1' | 'STAGE_2' | 'STAGE_3' | 'STAGE_4';
+  stageLabel: string;
+  rsRanking: number;
+  vcp: VCPResult;
+  sma50: number;
+  sma150: number;
+  sma200: number;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+  pctAbove52wLow: number;
+  pctBelow52wHigh: number;
+  minerviniVerdict: 'BUY' | 'HOLD' | 'SELL';
+  verdictReason: string;
+}
+
 export interface QuantitativePrediction {
   modelName: string;
   vwapStatus: 'ABOVE' | 'BELOW';
@@ -41,6 +81,7 @@ export interface QuantitativePrediction {
   atrValue: number;
   supportLevel: number;
   resistanceLevel: number;
+  minervini?: MinerviniAnalysis;
 }
 
 export interface CandidateStock {
@@ -79,7 +120,7 @@ export interface AIPredictionResponse {
   symbol: string;
   companyName: string;
   currentPrice: number;
-  direction: 'BUY' | 'SELL' | 'NEUTRAL';
+  direction: 'BUY' | 'HOLD' | 'SELL' | 'NEUTRAL';
   tradeType: 'INTRADAY' | 'SWING';
   holdingPeriod: string;
   buyTime: string;
@@ -126,6 +167,7 @@ export interface HighConvictionScanItem {
   riskReward: string;
   buyTimeWindow: string;
   convictionThesis: string;
+  minervini?: MinerviniAnalysis;
 }
 
 export interface MarketScanResponse {

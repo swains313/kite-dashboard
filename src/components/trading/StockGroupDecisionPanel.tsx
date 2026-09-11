@@ -6,7 +6,7 @@ import { Layers, Plus, X, ArrowRight } from 'lucide-react';
 interface StockGroupDecisionPanelProps {
   currentSymbol: string;
   currentPrice?: number;
-  currentDirection?: 'BUY' | 'SELL' | 'NEUTRAL';
+  currentDirection?: 'BUY' | 'HOLD' | 'SELL' | 'NEUTRAL';
   onSelectStock: (symbol: string) => void;
   isLoading: boolean;
 }
@@ -48,45 +48,36 @@ export const StockGroupDecisionPanel: React.FC<StockGroupDecisionPanelProps> = (
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = newTicker.trim().toUpperCase().replace(/\.NS$/, '');
-    if (clean && !stocks.includes(clean)) {
-      const updated = [...stocks, clean];
-      saveGroup(updated);
-      setNewTicker('');
-      onSelectStock(clean);
-    }
+    const clean = newTicker.trim().toUpperCase();
+    if (!clean || stocks.includes(clean)) return;
+    const updated = [...stocks, clean];
+    saveGroup(updated);
+    setNewTicker('');
+    onSelectStock(clean);
   };
 
   const handleRemove = (sym: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (stocks.length <= 1) return;
     const updated = stocks.filter((s) => s !== sym);
     saveGroup(updated);
   };
 
   return (
     <div className="bg-[#151922] border border-[#232936] rounded-2xl p-4 shadow-xl space-y-3">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#232936]">
+      {/* Header & Add Stock Form */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[#232936]">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-600/15 text-blue-400 border border-blue-500/30">
-            <Layers className="w-4 h-4" />
-          </div>
-          <div>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
-              Portfolio & Watchlist Group (Hold vs Sell Engine)
-            </h3>
-            <span className="text-[10px] text-slate-400 font-mono">
-              Click any stock to check live hold/sell action and synchronize chart
-            </span>
-          </div>
+          <Layers className="w-4 h-4 text-blue-400" />
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+            Portfolio & Watchlist Decision Engine
+          </h3>
         </div>
 
         {/* Quick Add Form */}
         <form onSubmit={handleAdd} className="flex items-center gap-1.5">
           <input
             type="text"
-            placeholder="Add e.g. TCS, ZOMATO"
+            placeholder="Add NSE Symbol (e.g. ITC)"
             value={newTicker}
             onChange={(e) => setNewTicker(e.target.value)}
             className="bg-[#0b0e14] border border-[#232936] focus:border-blue-500 text-white text-xs font-mono px-2.5 py-1 rounded-lg outline-none w-36 uppercase"
@@ -106,13 +97,16 @@ export const StockGroupDecisionPanel: React.FC<StockGroupDecisionPanelProps> = (
         {stocks.map((sym) => {
           const isActive = sym.toUpperCase() === currentSymbol.toUpperCase();
 
-          // Decision for active stock
+          // Decision for active stock based on Minervini SEPA
           let verdictText = 'CHECK ACTION';
           let verdictColor = 'bg-slate-800/60 text-slate-400 border-slate-700/60';
           if (isActive && currentDirection) {
             if (currentDirection === 'BUY') {
-              verdictText = '🟢 HOLD / BUY';
+              verdictText = '🟢 BUY / BREAKOUT';
               verdictColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+            } else if (currentDirection === 'HOLD') {
+              verdictText = '🔵 HOLD (STRENGTH)';
+              verdictColor = 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40';
             } else if (currentDirection === 'SELL') {
               verdictText = '🔴 SELL / EXIT';
               verdictColor = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
