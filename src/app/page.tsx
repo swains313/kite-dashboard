@@ -12,6 +12,7 @@ import { PositionSizeCalculator } from '@/components/trading/PositionSizeCalcula
 import { TopCandidatesStrip } from '@/components/trading/TopCandidatesStrip';
 import { MediaSentimentCard } from '@/components/trading/MediaSentimentCard';
 import { AIModelCards } from '@/components/trading/AIModelCards';
+import { AutoTradingEventLoopPanel } from '@/components/trading/AutoTradingEventLoopPanel';
 import { AIPredictionResponse, Timeframe } from '@/types/ai.types';
 import { Users, LogOut, User as UserIcon, Activity, AlertCircle, Zap } from 'lucide-react';
 
@@ -197,6 +198,9 @@ export default function Home() {
           onSelectStock={(sym) => fetchPrediction(sym, currentTimeframe, tradeType)}
           isLoading={fetching}
         />
+
+        {/* Autonomous Auto-Trader Event Loop Panel */}
+        <AutoTradingEventLoopPanel />
 
         {error && (
           <div className="p-4 bg-rose-950/40 border border-rose-800/40 rounded-xl text-rose-300 text-xs flex items-center gap-2">
