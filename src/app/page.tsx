@@ -12,9 +12,8 @@ import { PositionSizeCalculator } from '@/components/trading/PositionSizeCalcula
 import { TopCandidatesStrip } from '@/components/trading/TopCandidatesStrip';
 import { MediaSentimentCard } from '@/components/trading/MediaSentimentCard';
 import { AIModelCards } from '@/components/trading/AIModelCards';
-import { AutoTradingEventLoopPanel } from '@/components/trading/AutoTradingEventLoopPanel';
 import { AIPredictionResponse, Timeframe } from '@/types/ai.types';
-import { Users, LogOut, User as UserIcon, Activity, AlertCircle, Zap } from 'lucide-react';
+import { Users, LogOut, User as UserIcon, Activity, AlertCircle, Zap, Bot } from 'lucide-react';
 
 export default function Home() {
   const { user, token, isAuthenticated, isLoading, logout } = useAuth();
@@ -145,6 +144,15 @@ export default function Home() {
             </div>
 
             <Link
+              href="/autotrader"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 hover:text-white transition shadow-sm"
+              title="Open Autonomous Event-Loop Auto-Trader"
+            >
+              <Bot className="w-3.5 h-3.5 text-emerald-400" />
+              <span>🤖 Auto-Trader Loop</span>
+            </Link>
+
+            <Link
               href="/scanner"
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 hover:from-cyan-500/30 hover:to-emerald-500/30 border border-cyan-500/40 text-xs font-bold text-cyan-300 hover:text-white transition shadow-sm"
               title="Open Institutional 99% AI Market Scanner"
@@ -198,9 +206,6 @@ export default function Home() {
           onSelectStock={(sym) => fetchPrediction(sym, currentTimeframe, tradeType)}
           isLoading={fetching}
         />
-
-        {/* Autonomous Auto-Trader Event Loop Panel */}
-        <AutoTradingEventLoopPanel />
 
         {error && (
           <div className="p-4 bg-rose-950/40 border border-rose-800/40 rounded-xl text-rose-300 text-xs flex items-center gap-2">
