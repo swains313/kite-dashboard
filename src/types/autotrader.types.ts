@@ -36,6 +36,8 @@ export interface AutoTraderStats {
   totalRealizedPnL: number;
   maxProfit: number;
   maxLoss: number;
+  buyCount?: number;
+  sellCount?: number;
 }
 
 export interface ActivePosition {

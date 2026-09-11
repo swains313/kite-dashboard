@@ -1,17 +1,55 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Play, Square, Zap, RefreshCw, TrendingUp, TrendingDown, Activity, Layers, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Play, Square, Zap, RefreshCw, TrendingUp, TrendingDown, Activity, Layers, ShieldCheck, ArrowRight, Clock, AlertTriangle } from 'lucide-react';
 import { AutoTraderState } from '@/types/autotrader.types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const QUICK_STOCKS = ['TATAMOTORS', 'BHARTIARTL', 'RELIANCE', 'ICICIBANK', 'LT', 'BAJFINANCE'];
 
+// Helper to determine if Indian Equity Market (NSE) is currently open (9:15 AM - 3:30 PM IST, Mon-Fri)
+export function isIndianMarketOpen(): { isOpen: boolean; reason: string } {
+  try {
+    const now = new Date();
+    // Convert to IST
+    const istString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    const istDate = new Date(istString);
+    const day = istDate.getDay(); // 0 = Sun, 6 = Sat
+    const hours = istDate.getHours();
+    const minutes = istDate.getMinutes();
+    const currentMins = hours * 60 + minutes;
+
+    if (day === 0 || day === 6) {
+      return { isOpen: false, reason: 'Market Closed (Weekend)' };
+    }
+    // 9:15 AM is 9 * 60 + 15 = 555 mins
+    // 3:30 PM is 15 * 60 + 30 = 930 mins
+    if (currentMins < 555) {
+      return { isOpen: false, reason: 'Pre-Market (Opens 09:15 AM IST)' };
+    }
+    if (currentMins > 930) {
+      return { isOpen: false, reason: 'Post-Market (Closed at 03:30 PM IST)' };
+    }
+    return { isOpen: true, reason: 'Market Open (NSE Active)' };
+  } catch {
+    return { isOpen: true, reason: 'Market Active' };
+  }
+}
+
 export const AutoTradingEventLoopPanel: React.FC = () => {
   const [state, setState] = useState<AutoTraderState | null>(null);
   const [loading, setLoading] = useState(false);
   const [targetInput, setTargetInput] = useState('');
+  const [overrideMarketHours, setOverrideMarketHours] = useState(false);
+  const [marketStatus, setMarketStatus] = useState<{ isOpen: boolean; reason: string }>({ isOpen: true, reason: 'Checking...' });
+
+  useEffect(() => {
+    const updateMarket = () => setMarketStatus(isIndianMarketOpen());
+    updateMarket();
+    const timer = setInterval(updateMarket, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -64,8 +102,11 @@ export const AutoTradingEventLoopPanel: React.FC = () => {
 
   const isRunning = !!state?.isRunning;
   const activePos = state?.activePosition;
-  const stats = state?.stats || { totalTrades: 0, winningTrades: 0, losingTrades: 0, winRate: 0, totalRealizedPnL: 0 };
+  const stats = state?.stats || { totalTrades: 0, winningTrades: 0, losingTrades: 0, winRate: 0, totalRealizedPnL: 0, buyCount: 0, sellCount: 0 };
   const recentTrades = state?.recentTrades || [];
+
+  // Market hours enforcement: If market is closed and user has not toggled override, disable starting
+  const canStart = isRunning || marketStatus.isOpen || overrideMarketHours;
 
   return (
     <div className="bg-[#151922] border border-[#232936] rounded-2xl p-5 shadow-2xl space-y-4">
@@ -81,20 +122,41 @@ export const AutoTradingEventLoopPanel: React.FC = () => {
               <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${isRunning ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-slate-800/80 text-slate-400 border-slate-700'}`}>
                 {isRunning ? '● LOOP ACTIVE (15s)' : '○ IDLE (STOPPED)'}
               </span>
+              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 ${
+                marketStatus.isOpen ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+              }`}>
+                <Clock className="w-3 h-3" />
+                {marketStatus.reason}
+              </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">Automated buy/sell model verification engine with MongoDB trade ledger</p>
           </div>
         </div>
 
-        {/* Start / Stop Toggle Button */}
-        <div className="flex items-center gap-2">
+        {/* Start / Stop Toggle Button & Market Hours Control */}
+        <div className="flex items-center gap-3">
+          {!marketStatus.isOpen && !isRunning && (
+            <label className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400 cursor-pointer hover:text-slate-200">
+              <input
+                type="checkbox"
+                checked={overrideMarketHours}
+                onChange={(e) => setOverrideMarketHours(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-900 text-cyan-500 focus:ring-0"
+              />
+              <span>Paper Test Override</span>
+            </label>
+          )}
+
           <button
             type="button"
-            disabled={loading}
+            disabled={loading || (!isRunning && !canStart)}
             onClick={() => handleToggle(!isRunning)}
+            title={!canStart ? 'Auto-trading is disabled outside market hours (09:15 AM - 03:30 PM IST). Check Paper Test Override to test offline.' : undefined}
             className={`px-4 py-2 rounded-xl text-xs font-mono font-black flex items-center gap-2 transition-all shadow-lg ${
               isRunning
                 ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/20 border border-rose-400/40'
+                : !canStart
+                ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
                 : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20 border border-emerald-400/40'
             }`}
           >
@@ -154,9 +216,14 @@ export const AutoTradingEventLoopPanel: React.FC = () => {
         </div>
 
         <div className="bg-[#0b0e14] border border-[#232936] p-3 rounded-xl">
-          <span className="text-[10px] font-mono text-slate-400 block">EXECUTED TRADES</span>
-          <span className="font-mono font-bold text-lg text-slate-200 block mt-0.5">
-            {stats.totalTrades} <span className="text-[10px] text-slate-400 font-normal">({stats.winningTrades}W / {stats.losingTrades}L)</span>
+          <span className="text-[10px] font-mono text-slate-400 block">EXECUTED TRADES (BUY / SELL)</span>
+          <span className="font-mono font-bold text-base text-slate-200 block mt-0.5">
+            <span className="text-emerald-400">{stats.buyCount || 0} BUY</span>
+            <span className="text-slate-500 mx-1">/</span>
+            <span className="text-rose-400">{stats.sellCount || 0} SELL</span>
+            <span className="text-[10px] text-slate-400 block font-normal mt-0.5">
+              {stats.totalTrades} closed ({stats.winningTrades}W / {stats.losingTrades}L)
+            </span>
           </span>
         </div>
 
