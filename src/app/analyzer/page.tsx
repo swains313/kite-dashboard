@@ -36,8 +36,29 @@ export default function AnalyzerPage() {
     }
   }, []);
 
+  const handleToggleLoop = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/analyzer/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ running: !data?.isLoopRunning }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (data) {
+          setData({ ...data, isLoopRunning: json.isLoopRunning });
+        }
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     fetchAnalysis(forceOverride);
+    // Poll analyzer status every 15s to keep candidates & loop status synchronized
+    const timer = setInterval(() => {
+      fetchAnalysis(forceOverride);
+    }, 15000);
+    return () => clearInterval(timer);
   }, [fetchAnalysis, forceOverride]);
 
   return (
@@ -82,6 +103,20 @@ export default function AnalyzerPage() {
               <span>Test Override</span>
             </label>
 
+            {/* Event Loop Toggle Button */}
+            <button
+              type="button"
+              onClick={handleToggleLoop}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 border transition ${
+                data?.isLoopRunning
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                  : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${data?.isLoopRunning ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+              <span>{data?.isLoopRunning ? 'EVENT-LOOP ACTIVE (15m)' : 'LOOP PAUSED'}</span>
+            </button>
+
             <button
               type="button"
               disabled={loading}
@@ -89,7 +124,7 @@ export default function AnalyzerPage() {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-xs font-mono font-bold text-white transition shadow-sm disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              <span>{loading ? 'Scanning Market...' : 'Analyze Market'}</span>
+              <span>{loading ? 'Scanning...' : 'Analyze Now'}</span>
             </button>
           </div>
         </div>

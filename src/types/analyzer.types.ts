@@ -51,6 +51,9 @@ export interface PostMarketAnalysisResponse {
   timestamp: string;
   isWithinWindow: boolean;
   windowStatus: string;
+  isLoopRunning: boolean;
+  loopIntervalSeconds: number;
+  nextRunInSeconds?: number;
   totalAnalyzed: number;
   top5Candidates: TopSwingCandidate[];
   allRankedCandidates: TopSwingCandidate[];
