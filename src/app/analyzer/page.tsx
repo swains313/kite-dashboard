@@ -2,15 +2,18 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { PostMarketAnalysisResponse } from '@/types/analyzer.types';
+import { PostMarketAnalysisResponse, PredictionAuditRecord } from '@/types/analyzer.types';
 import { TopSwingCard } from '@/components/trading/TopSwingCard';
-import { ArrowLeft, BarChart3, Clock, RefreshCw, Zap, Shield, Sparkles, AlertCircle, TrendingUp } from 'lucide-react';
+import { PredictionAuditLedger } from '@/components/trading/PredictionAuditLedger';
+import { ArrowLeft, BarChart3, Clock, RefreshCw, Zap, Shield, Sparkles, AlertCircle, TrendingUp, History } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function AnalyzerPage() {
   const [data, setData] = useState<PostMarketAnalysisResponse | null>(null);
+  const [auditLogs, setAuditLogs] = useState<PredictionAuditRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [forceOverride, setForceOverride] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +39,32 @@ export default function AnalyzerPage() {
     }
   }, []);
 
+  const fetchAuditLogs = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/analyzer/logs`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setAuditLogs(json.data);
+        }
+      }
+    } catch {}
+  }, []);
+
+  const handleVerifyFlaws = async () => {
+    setIsVerifying(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/analyzer/verify`, { method: 'POST' });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          setAuditLogs(json.data);
+        }
+      }
+    } catch {}
+    setIsVerifying(false);
+  };
+
   const handleToggleLoop = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/analyzer/toggle`, {
@@ -54,12 +83,14 @@ export default function AnalyzerPage() {
 
   useEffect(() => {
     fetchAnalysis(forceOverride);
-    // Poll analyzer status every 15s to keep candidates & loop status synchronized
+    fetchAuditLogs();
+    // Poll analyzer status and audit ledger every 15s
     const timer = setInterval(() => {
       fetchAnalysis(forceOverride);
+      fetchAuditLogs();
     }, 15000);
     return () => clearInterval(timer);
-  }, [fetchAnalysis, forceOverride]);
+  }, [fetchAnalysis, fetchAuditLogs, forceOverride]);
 
   return (
     <main className="min-h-screen bg-[#07090e] text-slate-100 font-sans pb-16 selection:bg-cyan-500/30 selection:text-cyan-300">
@@ -227,6 +258,13 @@ export default function AnalyzerPage() {
             </div>
           </div>
         )}
+
+        {/* Multi-Algorithm Prediction Audit & Flaw Post-Mortem Ledger */}
+        <PredictionAuditLedger
+          logs={auditLogs}
+          onVerify={handleVerifyFlaws}
+          isVerifying={isVerifying}
+        />
       </div>
     </main>
   );

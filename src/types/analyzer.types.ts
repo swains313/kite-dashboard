@@ -68,3 +68,42 @@ export interface PostMarketAnalysisResponse {
   top5Candidates: TopSwingCandidate[];
   allRankedCandidates: TopSwingCandidate[];
 }
+
+export interface AlgoDiagnostic {
+  algoName: string;
+  verdict: string;
+  score: number;
+  details: string;
+}
+
+export interface PredictionAuditRecord {
+  logId: string;
+  timestamp: string;
+  symbol: string;
+  companyName: string;
+  predictedPrice: number;
+  entryPivot: number;
+  stopLoss: number;
+  target1: number;
+  target2: number;
+  swingConvictionScore: number;
+  minerviniStage: string;
+  rsRanking: number;
+  vcpDetected: boolean;
+  pocketPivot: boolean;
+  atrSqueeze: number;
+  mansfieldRS: number;
+  dtwScore: number;
+  newsSentiment: string;
+  diagnostics: AlgoDiagnostic[];
+  outcomeStatus: 'PENDING' | 'SUCCESS_TARGET1' | 'SUCCESS_TARGET2' | 'STOPPED_OUT' | 'FLAW_IDENTIFIED';
+  actualOutcome?: {
+    highestPriceReached?: number;
+    lowestPriceReached?: number;
+    closingPriceDay5?: number;
+    realizedReturnPercent?: number;
+    flawedAlgorithm?: string;
+    rootCauseAnalysis?: string;
+    verifiedAt?: string;
+  };
+}
