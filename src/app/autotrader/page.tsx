@@ -47,6 +47,14 @@ export default function AutoTraderPage() {
             </div>
 
             <Link
+              href="/analyzer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-xs font-medium text-blue-300 hover:text-white transition"
+            >
+              <Activity className="w-3.5 h-3.5 text-blue-400" />
+              <span>📊 Analyzer</span>
+            </Link>
+
+            <Link
               href="/scanner"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#111622] hover:bg-[#1a2234] border border-[#232d42] text-xs font-medium text-slate-300 hover:text-white transition"
             >

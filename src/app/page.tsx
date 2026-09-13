@@ -13,7 +13,7 @@ import { TopCandidatesStrip } from '@/components/trading/TopCandidatesStrip';
 import { MediaSentimentCard } from '@/components/trading/MediaSentimentCard';
 import { AIModelCards } from '@/components/trading/AIModelCards';
 import { AIPredictionResponse, Timeframe } from '@/types/ai.types';
-import { Users, LogOut, User as UserIcon, Activity, AlertCircle, Zap, Bot } from 'lucide-react';
+import { Users, LogOut, User as UserIcon, Activity, AlertCircle, Zap, Bot, BarChart3 } from 'lucide-react';
 
 export default function Home() {
   const { user, token, isAuthenticated, isLoading, logout } = useAuth();
@@ -142,6 +142,15 @@ export default function Home() {
                 {user?.role}
               </span>
             </div>
+
+            <Link
+              href="/analyzer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500/20 to-indigo-500/20 hover:from-blue-500/30 hover:to-indigo-500/30 border border-blue-500/40 text-xs font-bold text-blue-300 hover:text-white transition shadow-sm"
+              title="Open Post-Market Swing Analyzer (4 PM - 10 PM IST)"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-blue-400" />
+              <span>📊 Swing Analyzer (4-10 PM)</span>
+            </Link>
 
             <Link
               href="/autotrader"
