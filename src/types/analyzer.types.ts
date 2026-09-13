@@ -44,6 +44,16 @@ export interface TopSwingCandidate {
   };
   tomorrowPlan: TomorrowSwingPlan;
   sepaThesis: string;
+  advancedQuant?: {
+    volumeZScore: number;
+    isPocketPivot: boolean;
+    volatilitySqueezeRatio: number;
+    isVolatilityCompressed: boolean;
+    mansfieldRelativeStrength: number;
+    patternDtwScore: number;
+    pointOfControl: number;
+    lowVolumeNodeBreakout: boolean;
+  };
   kiteApiReady: KiteApiOrderPayload;
 }
 

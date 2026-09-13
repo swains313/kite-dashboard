@@ -55,6 +55,36 @@ export const TopSwingCard: React.FC<Props> = ({ candidate }) => {
         </div>
       </div>
 
+      {/* Advanced DSA & Quantitative Alpha Strip */}
+      {candidate.advancedQuant && (
+        <div className="grid grid-cols-4 gap-1.5 text-[10px] font-mono bg-[#070b12] p-2.5 rounded-xl border border-cyan-500/20">
+          <div title="Volume Z-Score vs 20-Day Mean">
+            <span className="text-slate-400 block text-[9px]">VOL Z-SCORE</span>
+            <span className={`font-bold ${candidate.advancedQuant.isPocketPivot ? 'text-emerald-400' : 'text-slate-300'}`}>
+              +{candidate.advancedQuant.volumeZScore.toFixed(1)}σ {candidate.advancedQuant.isPocketPivot ? '★' : ''}
+            </span>
+          </div>
+          <div title="Volatility Squeeze Ratio: ATR 5 / ATR 20">
+            <span className="text-slate-400 block text-[9px]">ATR SQUEEZE</span>
+            <span className={`font-bold ${candidate.advancedQuant.isVolatilityCompressed ? 'text-amber-300' : 'text-slate-300'}`}>
+              {candidate.advancedQuant.volatilitySqueezeRatio}x {candidate.advancedQuant.isVolatilityCompressed ? '⚡' : ''}
+            </span>
+          </div>
+          <div title="Mansfield Relative Strength vs Nifty 50">
+            <span className="text-slate-400 block text-[9px]">MANSFIELD RS</span>
+            <span className={`font-bold ${candidate.advancedQuant.mansfieldRelativeStrength >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {candidate.advancedQuant.mansfieldRelativeStrength >= 0 ? '+' : ''}{candidate.advancedQuant.mansfieldRelativeStrength.toFixed(1)}%
+            </span>
+          </div>
+          <div title="Dynamic Time Warping similarity to VCP multi-bagger breakout">
+            <span className="text-slate-400 block text-[9px]">DTW PATTERN</span>
+            <span className="font-bold text-cyan-300">
+              {candidate.advancedQuant.patternDtwScore}%
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Tomorrow's Execution Plan */}
       <div className="p-3.5 rounded-xl bg-gradient-to-br from-slate-900 to-[#141b2a] border border-[#232e44] space-y-2 text-xs font-mono">
         <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-1.5">
