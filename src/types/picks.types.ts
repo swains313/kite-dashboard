@@ -34,6 +34,8 @@ export interface DailyPick {
   _id: string;
   tradingDate: string;
   mode: TradeMode;
+  /** 1 = highest conviction of the day's five. */
+  rank: number;
   symbol: string;
   companyName: string;
   grade: PickGrade;
@@ -144,4 +146,69 @@ export interface TodayResponse {
   picks: DailyPick[];
   openPositions: PaperPosition[];
   performance: PerformanceSnapshot[];
+}
+
+export interface ChartBar {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  sma20: number | null;
+  sma50: number | null;
+}
+
+export interface ChartData {
+  symbol: string;
+  source: string;
+  lastPrice: number;
+  changePercent: number;
+  bars: ChartBar[];
+  sma50: number;
+  sma200: number;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+}
+
+export interface HoldAdvice {
+  symbol: string;
+  verdict: 'HOLD' | 'TRIM' | 'EXIT' | 'ADD';
+  confidence: number;
+  currentPrice: number;
+  entryPrice: number;
+  unrealizedPercent: number;
+  suggestedStop: number;
+  reasons: string[];
+  warnings: string[];
+  summary: string;
+  chart: ChartData;
+}
+
+export interface DailyAccuracy {
+  tradingDate: string;
+  mode: TradeMode;
+  picksPublished: number;
+  triggered: number;
+  targetsHit: number;
+  stoppedOut: number;
+  unresolved: number;
+  hitRate: number;
+  avgMovePercent: number;
+  bestSymbol: string;
+  bestMovePercent: number;
+  worstSymbol: string;
+  worstMovePercent: number;
+  marketBias?: string;
+  diagnosis: string;
+  verdict: 'GOOD' | 'MIXED' | 'POOR' | 'NO_TRADE_DAY';
+}
+
+export interface RollingDiagnosis {
+  daysAssessed: number;
+  avgHitRate: number;
+  avgMovePercent: number;
+  goodDays: number;
+  poorDays: number;
+  reading: string;
 }

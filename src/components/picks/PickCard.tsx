@@ -59,6 +59,9 @@ export function PickCard({ pick }: { pick: DailyPick }) {
       <div className="flex items-start justify-between gap-4 p-5 pb-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded bg-slate-800 text-[11px] font-bold text-slate-400">
+              {pick.rank || 1}
+            </span>
             <h2 className="text-2xl font-semibold tracking-tight text-slate-50">{pick.symbol}</h2>
             <span className="rounded border border-slate-700/80 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               {pick.mode}

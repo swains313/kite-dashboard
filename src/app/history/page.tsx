@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { apiGet, formatINR } from '@/lib/api';
 import { DailyPick } from '@/types/picks.types';
 
@@ -32,7 +31,7 @@ export default function History() {
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-slate-50">History</h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -48,12 +47,6 @@ export default function History() {
             )}
           </p>
         </div>
-        <Link
-          href="/"
-          className="rounded-md border border-slate-800 px-3 py-1.5 text-sm text-slate-400 transition hover:border-slate-700 hover:bg-slate-900 hover:text-slate-200"
-        >
-          Today
-        </Link>
       </header>
 
       {error && (
