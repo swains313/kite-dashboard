@@ -56,36 +56,47 @@ export default function Home() {
     data?.picks.find((p) => p.mode === mode);
 
   return (
-    <main className="mx-auto max-w-4xl px-5 py-10">
-      <header className="flex items-baseline justify-between gap-4">
-        <h1 className="text-base font-medium text-slate-100">Today&apos;s Pick</h1>
-        <Link href="/history" className="text-sm text-slate-500 hover:text-slate-300">
+    <main className="mx-auto max-w-5xl px-5 py-8">
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-lg font-semibold text-slate-50">Today&apos;s Pick</h1>
+          <p className="mt-0.5 text-sm text-slate-500">
+            One swing and one intraday candidate per trading day. Paper only.
+          </p>
+        </div>
+        <Link
+          href="/history"
+          className="rounded-md border border-slate-800 px-3 py-1.5 text-sm text-slate-400 transition hover:border-slate-700 hover:text-slate-200"
+        >
           History
         </Link>
       </header>
 
       {data && (
-        <div className="mt-4">
+        <div className="mt-5">
           <StatusBar kite={data.kite} tradingDate={data.tradingDate} phase={data.phase} />
         </div>
       )}
 
       {error && <p className="mt-4 text-sm text-rose-400">{error}</p>}
 
-      <div className="mt-6 grid gap-8 md:grid-cols-[1fr_200px]">
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_260px]">
         <div className="space-y-4">
           {MODES.map((mode) => {
             const pick = pickFor(mode);
             if (pick) return <PickCard key={mode} pick={pick} />;
 
             return (
-              <section key={mode} className="rounded-lg border border-slate-800/60 p-5 text-sm">
-                <p className="text-slate-400">No {mode.toLowerCase()} pick yet today.</p>
+              <section
+                key={mode}
+                className="rounded-xl border border-dashed border-slate-800 bg-slate-900/20 p-6 text-center"
+              >
+                <p className="text-sm text-slate-400">No {mode.toLowerCase()} pick yet today.</p>
                 <p className="mt-1 text-xs text-slate-600">{SCHEDULE[mode]}</p>
                 <button
                   onClick={() => void runScan(mode)}
                   disabled={scanning !== null}
-                  className="mt-3 text-sm text-slate-300 underline underline-offset-4 hover:text-slate-100 disabled:text-slate-600 disabled:no-underline"
+                  className="mt-3 rounded-md bg-slate-800 px-4 py-1.5 text-sm text-slate-200 transition hover:bg-slate-700 disabled:opacity-50"
                 >
                   {scanning === mode ? 'Scanning…' : 'Run scan now'}
                 </button>
