@@ -7,6 +7,7 @@ import { DailyPick, TodayResponse, TradeMode } from '@/types/picks.types';
 import { PickCard } from '@/components/picks/PickCard';
 import { StatusBar } from '@/components/picks/StatusBar';
 import { PerformancePanel } from '@/components/picks/PerformancePanel';
+import { MarketContextCard } from '@/components/picks/MarketContextCard';
 
 const MODES: TradeMode[] = ['SWING', 'INTRADAY'];
 const SCHEDULE: Record<TradeMode, string> = {
@@ -82,6 +83,7 @@ export default function Home() {
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_260px]">
         <div className="space-y-4">
+          {data?.context && <MarketContextCard context={data.context} />}
           {MODES.map((mode) => {
             const pick = pickFor(mode);
             if (pick) return <PickCard key={mode} pick={pick} />;

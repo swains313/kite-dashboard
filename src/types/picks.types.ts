@@ -102,11 +102,39 @@ export interface KiteStatus {
   loginUrl: string | null;
 }
 
+export interface Headline {
+  title: string;
+  source: string;
+  publishedAt: string;
+  sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+  weight: number;
+}
+
+export interface MarketContext {
+  timestamp: string;
+  biasScore: number;
+  bias: 'RISK_ON' | 'NEUTRAL' | 'RISK_OFF';
+  indexAboveSMA50: boolean;
+  niftyChangePercent: number;
+  globalCues: { label: string; changePercent: number; contribution: number }[];
+  news: {
+    score: number;
+    label: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    articleCount: number;
+    hasCatalyst: boolean;
+    catalystType: string;
+    headlines: Headline[];
+  };
+  summary: string;
+  tradingAdvised: boolean;
+}
+
 export interface TodayResponse {
   success: boolean;
   tradingDate: string;
   phase: string;
   kite: KiteStatus;
+  context: MarketContext | null;
   picks: DailyPick[];
   openPositions: PaperPosition[];
   performance: PerformanceSnapshot[];
