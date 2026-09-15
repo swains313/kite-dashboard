@@ -63,6 +63,12 @@ export interface DailyPick {
   candidatesEvaluated: number;
   runnersUp: { symbol: string; convictionScore: number; grade: PickGrade }[];
 
+  /** Market regime this pick was taken in — needed to read the outcome. */
+  marketBias?: 'RISK_ON' | 'NEUTRAL' | 'RISK_OFF';
+  marketBiasScore?: number;
+  marketSummary?: string;
+  tradingAdvised?: boolean;
+
   outcome: PickOutcome;
   outcomeNote?: string;
   exitPrice?: number;
